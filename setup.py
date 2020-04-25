@@ -19,4 +19,18 @@ setup(
     author='Shea G. Craig',
     author_email='sheagcraig@gmail.com',
     url='https://github.com/sheagcraig/MacKeychainTransportAdapter',
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Environment :: MacOS X',
+        'Environment :: MacOS X :: Cocoa',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Information Technology',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: Apache Software License',
+        'Operating System :: MacOS',
+        'Operating System :: MacOS :: MacOS X',
+        'Programming Language :: Python :: 3 :: Only'
+    ],
+    install_requires=['requests', 'pyobjc'],
+    python_requires='>=3.6',
 )
