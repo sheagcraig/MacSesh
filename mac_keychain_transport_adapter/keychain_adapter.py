@@ -13,6 +13,7 @@ from Security import (
     kSecMatchSearchList, SecItemExport, kSecFormatUnknown, kSecItemPemArmour)
 # pylint: enable=E0611
 
+
 class KeychainAdapter(requests.adapters.HTTPAdapter):
     """This adapter for requests verifies certs with the macOS keychain
 
@@ -26,6 +27,11 @@ class KeychainAdapter(requests.adapters.HTTPAdapter):
     >>> sesh.mount('https://', adapter)
     >>> response = sesh.get('https://nethack.org')
     ```
+
+    Methods:
+        update_truststore: Regenerates the truststore contents. Only
+            needed if the keychain has changed since the `Session`
+            was instantiated and the adapter mounted.
     """
 
     _truststore = None
@@ -35,8 +41,7 @@ class KeychainAdapter(requests.adapters.HTTPAdapter):
 
         # If verify is True, we should use the keychain for verifying
         # SSL certs.
-        if verify is True:
-            self._build_truststore()
+            self.update_truststore()
             if pathlib.Path(self._truststore).exists():
                 conn.cert_reqs = 'CERT_REQUIRED'
                 conn.ca_certs = self._truststore
@@ -46,7 +51,13 @@ class KeychainAdapter(requests.adapters.HTTPAdapter):
         else:
             super().cert_verify(conn, url, verify, cert)
 
-    def _build_truststore(self):
+    def update_truststore(self):
+        """Queries the keychain for all currently trusted certs
+
+        Regenerates the truststore contents. Only needed if the keychain
+        has changed since the `Session` was instantiated and the adapter
+        mounted.
+        """
         certs = itertools.chain(self._get_trusted_certs(), self._get_system_roots())
         return_code, pem_data = SecItemExport(
             list(certs), kSecFormatUnknown, kSecItemPemArmour, None, None)
