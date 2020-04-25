@@ -37,19 +37,24 @@ class KeychainAdapter(requests.adapters.HTTPAdapter):
     _truststore = None
 
     def cert_verify(self, conn, url, verify, cert):
+        """Manage urllib3 truststore parameters."""
         # Override cert_verify to use macOS keychain
 
         # If verify is True, we should use the keychain for verifying
         # SSL certs.
+        if not isinstance(verify, bool):
+            raise ValueError(
+                "The KeychainAdapter transport does not support paths to CA bundles. Use a "
+                "regular HTTPAdapter (the default)!")
+        elif verify is True:
             self.update_truststore()
             if pathlib.Path(self._truststore).exists():
                 conn.cert_reqs = 'CERT_REQUIRED'
                 conn.ca_certs = self._truststore
-        # Otherwise, the verify arg is either:
-        # a.) False: don't verify. Fall back to superclass.
-        # b.) Path to a pem file/dir: just let the superclass handle it.
-        else:
+        elif verify is False:
             super().cert_verify(conn, url, verify, cert)
+        else:
+            raise ValueError('Inappropriate argument for `verify`.')
 
     def update_truststore(self):
         """Queries the keychain for all currently trusted certs
