@@ -1,0 +1,2 @@
+from mac_keychain_transport_adapter.keychain_adapter import KeychainAdapter
+from mac_keychain_transport_adapter.version import __version__
