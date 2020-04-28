@@ -24,15 +24,15 @@ To achieve this, one of three different strategies can be employed:
 
 Example Usage:
 ```
->>> import mac_keychain_transport_adapter
->>> sesh = mac_keychain_transport_adapter.KeychainSession()
+>>> import macsesh
+>>> sesh = macsesh.KeychainSession()
 >>> response = sesh.get('https://nethack.org')
 ```
 Note: if you want to revert to "normal" requests (probably using
 certifi), in the same python process, you'll need to remove this
 module's injected stuff from urllib3:
 ```
->>> mac_keychain_transport_adapter.extract_from_urllib3()
+>>> macsesh.extract_from_urllib3()
 ```
 
 Finally, any certs added to the keychains after starting a session will
