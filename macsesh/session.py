@@ -8,25 +8,28 @@ from .secure_transport_adapter import SecureTransportAdapter
 from .simple_adapter import SimpleKeychainAdapter
 
 
-class KeychainSession(requests.Session):
+class BaseKeychainSession(requests.Session):
+
+    _adapter_class = KeychainAdapter
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mount('https://', self._adapter_class())
+
+
+class KeychainSession(BaseKeychainSession):
     """Requests session using the injected KeychainAdapter"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.mount('https://', KeychainAdapter())
+    _adapter_class = KeychainAdapter
 
 
-class SecureTransportSession(requests.Session):
+class SecureTransportSession(BaseKeychainSession):
     """Requests session using the SecureTransport"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.mount('https://', SecureTransportAdapter())
+    _adapter_class = SecureTransportAdapter
 
 
-class SimpleKeychainSession(requests.Session):
+class SimpleKeychainSession(BaseKeychainSession):
     """Requests session using the SimpleKeychainAdapter"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.mount('https://', SimpleKeychainAdapter())
+    _adapter_class = SimpleKeychainAdapter

@@ -1,4 +1,4 @@
-# Hello!
+# MacSesh
 This package allows requests to verify certs with the macOS keychain,
 rather than using certifi. It also includes some tools for easily
 hooking up a `SecureTransport` adapter (a la Pip) and then later
@@ -50,17 +50,5 @@ Clean up after using the "basic" API:
 ```macsesh.extract_from_requests()```
 
 Any certs added to the keychains after starting a session will
-not be available. The sessions and adapters all have an update_truststore
-method for re-dumping the trust.
-```
->>> import macsesh
->>> sesh = macsesh.KeychainSession()
->>> response = sesh.get('https://cheeze.co')
-<A bunch of angry exception noise!>
-SSLVerificationError
->>> # I added the cheeze issuer's cert"
->>> sesh.update_truststore()
->>> response = sesh.get('https://cheeze.co')
->>> response.status_code
-200
-```
+not be available. Digging down in and updating the SSLContext is rough;
+just make a new session if you have this need!
