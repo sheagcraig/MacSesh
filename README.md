@@ -13,17 +13,17 @@ System Roots keychain at
 `/System/Library/Keychains/SystemRootCertificates.keychain`.
 
 To achieve this, one of three different strategies can be employed:
-1. KeychainSession uses a custom SSLContext, requests Adapter, and
+1. `KeychainSession` uses a custom SSLContext, requests Adapter, and
    requests Session, and injects the SSLContext into urllib3. This
    approach is the recommendation.
-2. SecureTransportSession uses the urllib3 contrib module for injecting
+2. `SecureTransportSession` uses the urllib3 contrib module for injecting
    SecureTransport equivalents into stock urllib3. While this approach
    uses more of the native networking framework, it also seems to be
    written primarily with the goal of solving the issues with macOS and
    aging OpenSSL versions to ensure that Macs could still use pip.
    Therefore, it's not entirely feature-complete in providing a full
    requests Adapter. It's definitely worth experimenting with.
-3. SimpleKeychainSession circumvents the normal flow of session
+3. `SimpleKeychainSession` circumvents the normal flow of session
    startup, and tells the SSLContext to load its trust information
    early; in this case from certs dumped from the keychain.
 
