@@ -52,3 +52,14 @@ Clean up after using the "basic" API:
 Any certs added to the keychains after starting a session will
 not be available. Digging down in and updating the SSLContext is rough;
 just make a new session if you have this need!
+
+### What about mutual TLS certs?
+
+I have MDM-provided SCEP certs or non-exportable certs:
+This should be doable with the `SecureTransportSession`. Please let me
+know if you have tried it and it works; I don't have a way to test this
+at the moment.
+
+Also, I can implement looking up and retrieving certs by name for the
+other "strategies", but again, I don't have anything to test against,
+so I haven't written it yet.
