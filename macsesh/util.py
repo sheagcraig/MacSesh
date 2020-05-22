@@ -39,8 +39,8 @@ def inject_into_requests(session_class=None):
     # Handle the default class here by importing late to avoid circular
     # import issues.
     if not session_class:
-        from .session import KeychainSession
-        session_class = KeychainSession
+        from .session import Session
+        session_class = Session
     # Create a func that replicates requests.api.request, just subbing
     # in the passed session class as a kind of closure.
     def request(method, url, **kwargs):

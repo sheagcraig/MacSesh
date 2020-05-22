@@ -23,7 +23,7 @@ class KeychainSession(BaseKeychainSession):
     _adapter_class = KeychainAdapter
 
 
-class SecureTransportSession(BaseKeychainSession):
+class Session(BaseKeychainSession):
     """Requests session using the SecureTransport"""
 
     _adapter_class = SecureTransportAdapter
