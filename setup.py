@@ -31,6 +31,6 @@ setup(
         'Operating System :: MacOS :: MacOS X',
         'Programming Language :: Python :: 3 :: Only'
     ],
-    install_requires=['requests', 'pyobjc'],
+    install_requires=['requests', 'pyobjc-framework-SecurityFoundation', 'six'],
     python_requires='>=3.6',
 )
