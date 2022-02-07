@@ -7,6 +7,10 @@ cert auth and x509 payloads for server validation.
 
 ### Installing
 
+```
+pip install macsesh
+```
+
 If you want to install from a source distribution, clone and run below. 
 
 ```
