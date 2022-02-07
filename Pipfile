@@ -6,9 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-requests
-pyobjc-framework-SecurityFoundation
-six
+requests = '*'
+pyobjc-framework-SecurityFoundation = '*'
+six = '*'
 macsesh = {editable = true,path = "."}
 
 
