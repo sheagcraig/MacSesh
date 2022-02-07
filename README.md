@@ -5,6 +5,14 @@ Its original use-case was for Mac admins wanting to use python requests
 and certs provided by an MDM for TLS, Specifically, SCEP certs client 
 cert auth and x509 payloads for server validation.
 
+### Installing
+
+If you want to install from a source distribution, clone and run below. 
+
+```
+pip install .
+```
+
 ## Example Usage:
 Validate using a trusted cert from the keychain:
 
