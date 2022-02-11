@@ -1,9 +1,9 @@
 # MacSesh
 This package allows the popular requests library to use the macOS
-keychain for both validating a server, and for doing client cert auth.
+keychain for validating a server, and for doing client cert auth.
 Its original use-case was for Mac admins wanting to use python requests
-and certs provided by an MDM for TLS, Specifically, SCEP certs client 
-cert auth and x509 payloads for server validation.
+and certs provided by an MDM for TLS, Specifically, client cert auth
+using SCEP profiles, and x509 payloads for server validation.
 
 ### Installing
 
@@ -63,15 +63,17 @@ cert auth as well of course, but they require the identity to be
 available on the filesystem just like regular requests.
 
 To specify a certificate to use, provide the Common Name of the cert to
-requests' normal `cert` argument as in the example above. As the keychain
-may have multiple certs which match , macsesh performs some additional 
-filtering.
+requests' normal `cert` argument as in the example above. As the
+keychain may have multiple certs which match , macsesh performs some
+additional filtering.
 1. The query does a "subject contains" search with the CN provided, so
    for exmaple `cert='taco'` could match a CN of `taco truck` or `taco
-   party`. macsesh will drop anything that is not an exact match.
-2. The resulting certs may have been renewed, and the old certs are still
-   in the keychain. macsesh sorts them by "not valid after" date and
-   picks the one with the longest lifespan.
+   party`.
+2. After the "subject contains" search, macsesh will drop anything that
+   is not an exact string match.
+3. The resulting certs may have been renewed, and the old certs are
+   still in the keychain. macsesh sorts them by "not valid after" date
+   and picks the one with the longest lifespan.
 
 ## Advanced
 
@@ -80,7 +82,7 @@ If for some reason you want to revert to "normal" requests (probably
 using certifi), in the same python process, you'll need to remove this
 module's injected stuff from urllib3 or requests.
 
-Remove the SSLContext if you used any of the Sessions:
+Remove the `SSLContext` if you used any of the Sessions:
 ```macsesh.extract_from_urllib3()```
 Clean up after using the "basic" API:
 ```macsesh.extract_from_requests()```
@@ -91,29 +93,29 @@ just make a new session if you have this need!
 
 ### Choosing a session type
 macsesh provides three different types of requests `Session` classes.
-While we probably only need the `Session`, the other two are included for
-posterity since they are interesting and potentially useful.
+While we probably only need the `Session`, the other two are included
+for posterity since they are interesting and potentially useful.
 
 1. If in doubt, use `Session` It uses the securetransport module
    contributed to urllib3 as a base SSLContext. Pip, for example, uses
    this on macOS.  The securetransport module uses an entirely different
    `SSLContext`, using ctypes to connect to the macOS `Security` 
    framework. macsesh then injects additional code into the urllib3
-   code to use the keychain instead of conforming to the OpenSSL approach
-   of using paths to files. If you need to do client cert auth from
-   keychain identities, this is the one you want.
+   code to use the keychain instead of conforming to the OpenSSL
+   approach of using paths to files. If you need to do client cert auth
+   from keychain identities, this is the one you want.
 1. `KeychainSession` uses a custom SSLContext, requests Adapter, and
    requests Session, and injects the SSLContext into urllib3. The certs
    for validation are dumped from the keychain and held in memory. The
-   goal of this approach is to use the minimum amount of messing about to
-   achieve cert validation.
+   goal of this approach is to use the minimum amount of messing about
+   to achieve cert validation.
 3. `SimpleKeychainSession` circumvents the normal flow of session
    startup, and tells the SSLContext to load its trust information
    up front rather than waiting for a bunch of internal checks to decide
    the context needs to load the trust store. It uses the same method
    as the `KeychainSession` and functionally shouldn't be any different.
 
-### What about cert auth for `SimpleKeyhainSession` and
+### What about cert auth for `SimpleKeychainSession` and
 `KeychainSession`?
 
 I can try implementing looking up and retrieving certs by name for the
