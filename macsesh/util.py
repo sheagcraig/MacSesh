@@ -7,7 +7,12 @@ from requests.packages.urllib3 import util as urllib3_util
 
 # Store the original values of these urllib3 attributes so we can
 # restore them later.
-ORIGINAL_HAS_SNI = urllib3_util.HAS_SNI
+
+# recent versions of urllib3 no longer expose the HAS_SNI Variable
+URLLIB3_HAS_SNI_VAR = 'HAS_SNI' in vars(urllib3_util)
+if URLLIB3_HAS_SNI_VAR:
+    ORIGINAL_HAS_SNI = urllib3_util.HAS_SNI
+
 ORIGINAL_SSLContext = urllib3_util.ssl_.SSLContext
 # Store the original requests API funcs so we can restore later.
 ORIGINAL_REQUEST = requests.api.request
@@ -17,8 +22,10 @@ def extract_from_urllib3():
     """Undo the injection of this project's contexts from urllib3"""
     urllib3_util.SSLContext = ORIGINAL_SSLContext
     urllib3_util.ssl_.SSLContext = ORIGINAL_SSLContext
-    urllib3_util.HAS_SNI = ORIGINAL_HAS_SNI
-    urllib3_util.ssl_.HAS_SNI = ORIGINAL_HAS_SNI
+    if URLLIB3_HAS_SNI_VAR:
+        urllib3_util.HAS_SNI = ORIGINAL_HAS_SNI
+        urllib3_util.ssl_.HAS_SNI = ORIGINAL_HAS_SNI
+
     urllib3_util.IS_SECURETRANSPORT = False
     urllib3_util.ssl_.IS_SECURETRANSPORT = False
 
