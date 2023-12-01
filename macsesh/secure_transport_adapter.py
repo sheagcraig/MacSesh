@@ -12,7 +12,7 @@ from operator import itemgetter
 
 import objc
 import requests
-import urllib3.contrib.securetransport
+from . import securetransport
 from requests.packages.urllib3.util.ssl_ import create_urllib3_context
 from Security import (
     SecCertificateCopyValues,
@@ -28,8 +28,8 @@ from Security import (
     kSecOIDX509V1SubjectName,
     kSecOIDX509V1ValidityNotAfter,
     kSecReturnRef)
-from urllib3.contrib._securetransport.bindings import CoreFoundation, Security
-from urllib3.contrib._securetransport.low_level import _cf_dictionary_from_tuples
+from ._securetransport.bindings import CoreFoundation, Security
+from ._securetransport.low_level import _cf_dictionary_from_tuples
 
 from . import keychain
 
@@ -38,7 +38,7 @@ class SecureTransportAdapter(requests.adapters.HTTPAdapter):
     """HTTPAdapter that uses macOS SecureTransport"""
 
     def __init__(self, **kwargs):
-        urllib3.contrib.securetransport.inject_into_urllib3()
+        securetransport.inject_into_urllib3()
         super().__init__(**kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
@@ -114,4 +114,4 @@ def _get_cn(cert_info):
 
 
 # Monkey patch!
-urllib3.contrib.securetransport._load_client_cert_chain = _load_client_cert_chain
+securetransport._load_client_cert_chain = _load_client_cert_chain
