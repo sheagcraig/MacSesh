@@ -60,6 +60,7 @@ import errno
 import os.path
 import shutil
 import socket
+import _ssl
 import ssl
 import struct
 import threading
@@ -166,6 +167,8 @@ _tls_version_to_st: dict[int, int] = {
     ssl.TLSVersion.TLSv1: SecurityConst.kTLSProtocol1,
     ssl.TLSVersion.TLSv1_1: SecurityConst.kTLSProtocol11,
     ssl.TLSVersion.TLSv1_2: SecurityConst.kTLSProtocol12,
+    # SecureTransport API (via ctypes) does not support TLS 1.3, even on modern macOS.
+    # The maximum supported version is TLS 1.2.
     ssl.TLSVersion.MAXIMUM_SUPPORTED: SecurityConst.kTLSProtocol12,
 }
 
@@ -714,7 +717,7 @@ class WrappedSocket:
         )
         _assert_no_error(result)
         if protocol.value == SecurityConst.kTLSProtocol13:
-            raise ssl.SSLError("SecureTransport does not support TLS 1.3")
+            return "TLSv1.3"
         elif protocol.value == SecurityConst.kTLSProtocol12:
             return "TLSv1.2"
         elif protocol.value == SecurityConst.kTLSProtocol11:
@@ -767,6 +770,23 @@ class SecureTransportContext:
         self._client_key: str | None = None
         self._client_key_passphrase = None
         self._alpn_protocols: list[bytes] | None = None
+        # `VERIFY_X509_PARTIAL_CHAIN` makes OpenSSL's chain building behave more
+        # like RFC 3280 and 5280, which specify that chain building stops with the
+        # first trust anchor, even if that anchor is not self-signed.
+        #
+        # `VERIFY_X509_STRICT` makes OpenSSL more conservative about the
+        # certificates it accepts, including "disabling workarounds for
+        # some broken certificates."
+        self._verify_flags: int = 0
+        self._verify_flags |= (_ssl.VERIFY_X509_PARTIAL_CHAIN | _ssl.VERIFY_X509_STRICT)
+
+    @property
+    def verify_flags(self):
+        return self._verify_flags
+
+    @verify_flags.setter
+    def verify_flags(self, value):
+        self._verify_flags = value
 
     @property
     def check_hostname(self) -> Literal[True]:
