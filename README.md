@@ -5,6 +5,11 @@ Its original use-case was for Mac admins wanting to use python requests
 and certs provided by an MDM for TLS, Specifically, client cert auth
 using SCEP profiles, and x509 payloads for server validation.
 
+macOS has deprecated SecureTransport, which creates an issue. First,
+this will obviously stop working at some point in the future. Second,
+TLSv1.3 is not supported, probably as it wasn't worth adding to the
+old when it was added to Network.framework.
+
 ### Installing
 
 ```
