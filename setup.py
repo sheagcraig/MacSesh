@@ -16,8 +16,8 @@ setup(
     description='Tools for letting the macOS Keychain verify certs for python requests',
     long_description=readme.read_text(),
     long_description_content_type='text/markdown',
-    author='Shea G. Craig',
-    author_email='sheagcraig@gmail.com',
+    author='S Craig',
+    author_email='sheagcraig@users.noreply.github.com',
     url='https://github.com/sheagcraig/MacSesh',
     classifiers=[
         'Development Status :: 3 - Alpha',
